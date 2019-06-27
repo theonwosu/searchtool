@@ -1,0 +1,120 @@
+/**
+ * Copyright (c) 2008 by Theo Nwosu. All Rights Reserved.
+ *  
+ * Theo Nwosu grants you a non-exclusive, royalty free, license to use,
+ * modify and redistribute this software in source and binary code form,
+ * provided that this copyright notice and license appear on all copies of
+ * the software.
+ * 
+ * This software is provided "AS IS," without a warranty of any kind.
+ */
+package search.dialogs;
+
+import java.awt.BorderLayout;
+import java.awt.Frame;
+
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JPanel;
+
+public class PatternListDialog extends JDialog {
+  private JButton okButton = new JButton("OK");
+  private JButton cancelButton = new JButton("Cancel");
+  private FilePattern[] filePattern = { 
+      new FilePattern("*.ant"), 
+      new FilePattern("*.class"),
+      new FilePattern("*.css"),
+      new FilePattern("*.datagraph"),
+      new FilePattern("*.ddl"),
+      new FilePattern("*.dtd"),
+      new FilePattern("*.ecore"),
+      new FilePattern("*.ecore2ecore"),
+      new FilePattern("*.ecore2xml"),
+      new FilePattern("*.emof"),
+      new FilePattern("*.ent"),
+      new FilePattern("*.exsd"),
+      new FilePattern("*.flow"),
+      new FilePattern("*.genmodel"),
+      new FilePattern("*.gmfgraph"),
+      new FilePattern("*.gmftool"),
+      new FilePattern("*.htm"),
+      new FilePattern("*.html"),
+      new FilePattern("*.htpl"),
+      new FilePattern("*.jardesc"),
+      new FilePattern("*.java"),
+      new FilePattern("*.jpage"),
+      new FilePattern("*.js"),
+      new FilePattern("*.jsf"),
+      new FilePattern("*.jsp"),
+      new FilePattern("*.jspf"),
+      new FilePattern("*.jspx"),
+      new FilePattern("*.jsv"),
+      new FilePattern("*.jtpl"),
+      new FilePattern("*.log"),
+      new FilePattern("*.logic"),
+      new FilePattern("*.macrodef"),
+      new FilePattern("*.mod"),
+      new FilePattern("*.override"),
+      new FilePattern("*.prefs"),
+      new FilePattern("*.product"),
+      new FilePattern("*.properties"),
+      new FilePattern("*.server"),
+      new FilePattern("*.shapes"),
+      new FilePattern("*.shtm"),
+      new FilePattern("*.shtml"),
+      new FilePattern("*.sql"),
+      new FilePattern("*.sqlpage"),
+      new FilePattern("*.tag"),
+      new FilePattern("*.tagf"),
+      new FilePattern("*.tagx"),
+      new FilePattern("*.target"),
+      new FilePattern("*.text"),
+      new FilePattern("*.tld"),
+      new FilePattern("*.txt"),
+      new FilePattern("*.wml"),
+      new FilePattern("*.wsdd"),
+      new FilePattern("*.wsdl"),
+      new FilePattern("*.wsil"),
+      new FilePattern("*.wsimsg"),
+      new FilePattern("*.xhtml"),
+      new FilePattern("*.xmi"),
+      new FilePattern("*.xml"),
+      new FilePattern("*.xpt"),
+      new FilePattern("*.xsd"),
+      new FilePattern("*.xsd2ecore"),
+      new FilePattern("*.xsl"),
+      new FilePattern("*.xslt")
+  };
+
+  public PatternListDialog(Frame owner, String title, boolean modal) {
+    super(owner, title, modal);
+    JPanel mainPanel = new JPanel();
+    mainPanel.setLayout(new BorderLayout());
+
+    JPanel buttonsPanel = new JPanel();
+    buttonsPanel.add(okButton);
+    buttonsPanel.add(cancelButton);
+    mainPanel.add(buttonsPanel, BorderLayout.SOUTH);
+  }
+
+  class FilePattern {
+    protected boolean selected = false;
+    protected String name;
+
+    public FilePattern(String name) {
+      this.name = name;
+    }
+
+    public void negateSelected() {
+      selected = !selected;
+    }
+
+    public boolean isSelected() {
+      return selected;
+    }
+
+    public String toString() {
+      return null;
+    }
+  }
+}

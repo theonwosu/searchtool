@@ -1,0 +1,199 @@
+/**
+ * Copyright (c) 2008 by Theo Nwosu. All Rights Reserved.
+ *  
+ * Theo Nwosu grants you a non-exclusive, royalty free, license to use,
+ * modify and redistribute this software in source and binary code form,
+ * provided that this copyright notice and license appear on all copies of
+ * the software.
+ * 
+ * This software is provided "AS IS," without a warranty of any kind.
+ */
+package search.dialogs;
+
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Frame;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.ActionListener;
+
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JDialog;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.ListCellRenderer;
+import javax.swing.ListModel;
+import javax.swing.ListSelectionModel;
+import javax.swing.UIManager;
+import javax.swing.border.Border;
+import javax.swing.border.EmptyBorder;
+
+public class PatternListDialog extends JDialog {
+  private JButton okButton = new JButton("OK");
+  private JButton cancelButton = new JButton("Cancel");
+  private String selectedFiles = "";
+  private FileType[] filePatterns = null;
+  private JList patternsList = null;
+  private boolean isCancelled = false;
+
+  public PatternListDialog(Frame owner, String title, boolean modal,
+      FileType[] filePatterns) {
+    super(owner, title, modal);
+    this.filePatterns = filePatterns;
+    CheckBoxListCellRenderer renderer = new CheckBoxListCellRenderer();
+    patternsList = new JList(filePatterns);
+    patternsList.setCellRenderer(renderer);
+    CheckBoxListener listener = new CheckBoxListener(patternsList);
+    patternsList.addMouseListener(listener);
+    patternsList.addKeyListener(listener);
+
+    JPanel mainPanel = new JPanel();
+    mainPanel.setLayout(new BorderLayout());
+    mainPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+
+    JScrollPane listScrollPane = new JScrollPane();
+    listScrollPane.getViewport().add(patternsList);
+    mainPanel.add(listScrollPane, BorderLayout.CENTER);
+
+    okButton.addActionListener(new OkButtonListener(patternsList));
+    JPanel buttonsPanel = new JPanel();
+    buttonsPanel.add(okButton);
+    buttonsPanel.add(cancelButton);
+    cancelButton.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent evt) {
+        reset();
+        setCancelled(true);
+        dispose();
+      }
+    });
+    mainPanel.add(buttonsPanel, BorderLayout.SOUTH);
+
+    getContentPane().add(mainPanel, BorderLayout.CENTER);
+    setSize(250, 400);
+    setResizable(false);
+    setLocationRelativeTo(owner);
+  }
+
+  class CheckBoxListCellRenderer extends JCheckBox implements ListCellRenderer {
+    protected Border defaultBorder = new EmptyBorder(2, 2, 2, 2);
+
+    public CheckBoxListCellRenderer() {
+      setOpaque(true);
+      setBorder(defaultBorder);
+    }
+
+    public Component getListCellRendererComponent(JList list, Object value, int index,
+        boolean isSelected, boolean cellHasFocus) {
+      if (value != null) {
+        setText(value.toString());
+      }
+      setBackground(isSelected ? list.getSelectionBackground() : list.getBackground());
+      setForeground(isSelected ? list.getSelectionForeground() : list.getForeground());
+      FileType type = (FileType) value;
+      setSelected(type.isSelected());
+      setFont(list.getFont());
+      setBorder((cellHasFocus) ? UIManager.getBorder("List.focusCellHighlightBorder")
+          : defaultBorder);
+      return this;
+    }
+  }
+
+  public class CheckBoxListener extends MouseAdapter implements KeyListener {
+    JList list = null;
+
+    public CheckBoxListener(JList list) {
+      this.list = list;
+    }
+
+    public void mouseClicked(MouseEvent e) {
+      if (e.getX() < 20) {
+        check();
+      }
+    }
+
+    public void keyPressed(KeyEvent e) {
+      if (e.getKeyChar() == ' ') {
+        check();
+      }
+    }
+
+    public void keyTyped(KeyEvent e) {
+    }
+
+    public void keyReleased(KeyEvent e) {
+    }
+
+    protected void check() {
+      if (list != null) {
+        int index = list.getSelectedIndex();
+        if (index < 0) {
+          return;
+        }
+        FileType type = (FileType) list.getModel().getElementAt(index);
+        type.negateSelected();
+        list.repaint();
+      }
+    }
+  }
+
+  class OkButtonListener implements ActionListener {
+    private JList list = null;
+
+    public OkButtonListener(JList list) {
+      this.list = list;
+    }
+
+    public void actionPerformed(ActionEvent e) {
+      if (list != null) {
+        ListModel model = list.getModel();
+        FileType type = null;
+        String comma = "";
+        selectedFiles = "";
+        for (int k = 0; k < model.getSize(); k++) {
+          type = (FileType) model.getElementAt(k);
+          if (type.isSelected()) {
+            selectedFiles = selectedFiles + comma + type;
+            comma = ",";
+          }
+        }
+      }
+      reset();
+      setCancelled(false);
+      dispose();
+    }
+  }
+  
+  protected void reset(){
+    ListModel model = patternsList.getModel();
+    FileType type = null;
+    for (int k = 0; k < model.getSize(); k++) {
+      type = (FileType) model.getElementAt(k);
+      if (type.isSelected()) {
+        type.negateSelected();
+      }
+    } 
+    ListSelectionModel listSelectionModel = patternsList.getSelectionModel();
+    listSelectionModel.clearSelection();
+    //reset scroll bar
+    if(patternsList.getModel().getSize() > 0){
+      patternsList.ensureIndexIsVisible(0);
+    }
+  }
+
+  public String getSelectedFiles() {
+    return selectedFiles;
+  }
+
+  public boolean isCancelled() {
+    return isCancelled;
+  }
+
+  public void setCancelled(boolean isCancelled) {
+    this.isCancelled = isCancelled;
+  }
+}
