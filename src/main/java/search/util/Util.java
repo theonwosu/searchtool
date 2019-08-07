@@ -7,6 +7,8 @@
  * the software.
  * 
  * This software is provided "AS IS" without a warranty of any kind.
+ 
+  @author Theophine Nwosu
  */
 package search.util;
 
